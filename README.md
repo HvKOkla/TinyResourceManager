@@ -8,7 +8,6 @@ A lightweight, **header-only** C++17 resource manager designed for games and rea
 * **Modern C++17:** Built with `std::shared_ptr`, `std::filesystem`, and type safety.
 * **Automatic Cleanup:** Easily unload resources no longer in use.
 
----
 
 ##  Quick Start
 
