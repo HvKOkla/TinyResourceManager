@@ -1,32 +1,15 @@
-#  Modern C++20 Resource Manager
-
-A lightweight, **header-only** C++20 resource manager designed for games and real-time applications. It handles automatic caching, path normalization, and safe memory management using smart pointers.
-
-## Features
-* **Header-Only:** Drop `ResourceManager.hpp` into your project and go.
-* **Smart Caching:** Prevents loading duplicate files from disk.
-* **Modern C++17:** Built with `std::shared_ptr`, `std::filesystem`, and type safety.
-* **Automatic Cleanup:** Easily unload resources no longer in use.
-
-
-##  Quick Start
-
-```cpp
-#include "ResourceManager.hpp"
-
-struct Texture {
-    bool loadFromFile(const std::string& path) { return true; }
-};
-
-int main() {
-    Core::ResourceManager<Texture> textures;
-
-    // Load from disk
-    auto hero = textures.load("assets/hero.png");
-
-    // Loaded from cache instantly!
-    auto duplicate = textures.load("assets/hero.png");
-
-    // Clean up unused memory
-    textures.unloadUnused();
-}
+TinyResourceManager Lightweight header-only C++20 resource manager for games and real-time apps.
+Features
+•	Header-only: drop ResourceManager.hpp into your project
+•	Smart caching: avoids duplicate disk loads
+•	Modern C++20 (stdshared_ptr, stdfilesystem, concepts)
+•	Automatic cleanup of unused resources
+Quick start
+1.	Copy ResourceManager.hpp into your include path
+2.	#include "ResourceManager.hpp"
+3.	Use CoreResourceManager<T> to load resources: Example: CoreResourceManager<Texture> textures; auto t = textures.load("assets/hero.png"); textures.unloadUnused();
+Requirements
+•	C++20 compiler (MSVC/Clang/GCC)
+•	CMake >= 3.15 (if using provided build files)
+License MIT
+   
