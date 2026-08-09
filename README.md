@@ -37,6 +37,7 @@ int main() {
 	return 0;
 }
 
+Requirement:
 •	C++20 compiler (MSVC/Clang/GCC)
 •	CMake >= 3.15 (if using provided build files)
 
