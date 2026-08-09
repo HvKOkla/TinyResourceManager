@@ -1,90 +1,116 @@
 #pragma once
-#ifndef RESOURCE_MANAGER_HPP
-#define RESOURCE_MANAGER_HPP
 
+#include <filesystem>
+#include <format>
+#include <algorithm>
 #include <iostream>
 #include <memory>
+#include <mutex>
+#include <shared_mutex>
 #include <string>
 #include <unordered_map>
-#include <filesystem>
+#include <type_traits>
+#include <utility>
 
 namespace Core {
+
+    
+    namespace detail {
+        template<typename, typename = void>
+        struct is_loadable_resource : std::false_type {};
+        template<typename T>
+        struct is_loadable_resource<T, std::void_t<
+            decltype(std::declval<T>().loadFromFile(std::declval<const std::string&>()))
+        >> : std::bool_constant<
+            std::is_same_v<decltype(std::declval<T>().loadFromFile(std::declval<const std::string&>())), bool> &&
+            std::is_default_constructible_v<T>
+        > {};
+    }
 
     template <typename T>
     class ResourceManager {
     public:
+        static_assert(detail::is_loadable_resource<T>::value, "T must be default-constructible and have bool loadFromFile(const std::string&).");
         ResourceManager() = default;
         ~ResourceManager() = default;
 
-        
         ResourceManager(const ResourceManager&) = delete;
         ResourceManager& operator=(const ResourceManager&) = delete;
 
-        
         ResourceManager(ResourceManager&&) noexcept = default;
         ResourceManager& operator=(ResourceManager&&) noexcept = default;
 
-   
         std::shared_ptr<T> load(const std::filesystem::path& filepath) {
             std::string key = filepath.lexically_normal().string();
 
             
-            if (auto it = m_resources.find(key); it != m_resources.end()) {
-                std::cout << "[RESOURCE] Cache hit : " << key << '\n';
-                return it->second;
+            {
+                std::shared_lock<std::shared_mutex> readLock(m_mutex);
+                if (auto it = m_resources.find(key); it != m_resources.end()) {
+                    std::cout << std::format("[RESOURCE] Cache hit : {}\n", key);
+                    return it->second;
+                }
             }
 
             
             auto resource = std::make_shared<T>();
-
-            
             if (!resource->loadFromFile(key)) {
-                std::cerr << "[RESOURCE ERROR] Echec du chargement : " << key << '\n';
+                std::cerr << std::format("[RESOURCE ERROR] Échec du chargement : {}\n", key);
                 return nullptr;
             }
 
             
-            m_resources[key] = resource;
-            std::cout << "[RESOURCE] Chargee depuis le disque : " << key << '\n';
+            {
+                std::unique_lock<std::shared_mutex> writeLock(m_mutex);
+
+                
+                if (auto it = m_resources.find(key); it != m_resources.end()) {
+                    std::cout << std::format("[RESOURCE] Cache hit (post-load) : {}\n", key);
+                    return it->second;
+                }
+
+                m_resources[key] = resource;
+                std::cout << std::format("[RESOURCE] Chargée depuis le disque : {}\n", key);
+            }
+
             return resource;
         }
 
-        bool isLoaded(const std::filesystem::path& filepath) const {
+        [[nodiscard]] bool isLoaded(const std::filesystem::path& filepath) const {
             std::string key = filepath.lexically_normal().string();
-            return m_resources.find(key) != m_resources.end();
+
+            std::shared_lock<std::shared_mutex> readLock(m_mutex);
+            return m_resources.contains(key);
         }
 
-      
         std::size_t unloadUnused() {
-            std::size_t count = 0;
-            for (auto it = m_resources.begin(); it != m_resources.end(); ) {
-                
-                if (it->second.use_count() == 1) {
-                    std::cout << "[RESOURCE] Liberation mémoire : " << it->first << '\n';
-                    it = m_resources.erase(it);
-                    ++count;
+            std::unique_lock<std::shared_mutex> writeLock(m_mutex);
+
+            return std::erase_if(m_resources, [](const auto& pair) {
+                const auto& [key, resource] = pair;
+                bool isUnused = (resource.use_count() == 1);
+
+                if (isUnused) {
+                    std::cout << std::format("[RESOURCE] Libération mémoire : {}\n", key);
                 }
-                else {
-                    ++it;
-                }
-            }
-            return count;
+
+                return isUnused;
+                });
         }
 
-
-        void clear() {
+        void clear() noexcept {
+            std::unique_lock<std::shared_mutex> writeLock(m_mutex);
             m_resources.clear();
         }
 
         [[nodiscard]] std::size_t size() const noexcept {
+            std::shared_lock<std::shared_mutex> readLock(m_mutex);
             return m_resources.size();
         }
 
     private:
-        
+        mutable std::shared_mutex m_mutex; 
         std::unordered_map<std::string, std::shared_ptr<T>> m_resources;
     };
 
-} // namespace Core
-
-#endif // RESOURCE_MANAGER_HPP
+} 
