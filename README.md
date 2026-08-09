@@ -1,6 +1,6 @@
-#  Modern C++17 Resource Manager
+#  Modern C++20 Resource Manager
 
-A lightweight, **header-only** C++17 resource manager designed for games and real-time applications. It handles automatic caching, path normalization, and safe memory management using smart pointers.
+A lightweight, **header-only** C++20 resource manager designed for games and real-time applications. It handles automatic caching, path normalization, and safe memory management using smart pointers.
 
 ## Features
 * **Header-Only:** Drop `ResourceManager.hpp` into your project and go.
