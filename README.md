@@ -15,7 +15,7 @@ Quick start:
 1.	Copy ResourceManager.hpp into your include path
 2.	#include "ResourceManager.hpp"
 3.	Use CoreResourceManager<T> to load resources:
-4.	Example: available in main.cpp
+4.	Example: available in ResourceManager/app/main.cpp
 
 
 Requirement:
