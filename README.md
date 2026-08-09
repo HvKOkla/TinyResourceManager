@@ -12,7 +12,8 @@ Quick start:
 1.	Copy ResourceManager.hpp into your include path
 2.	#include "ResourceManager.hpp"
 3.	Use CoreResourceManager<T> to load resources:
-4.	Example:#include "ResourceManager.hpp"
+4.	Example:
+5.	#include "ResourceManager.hpp"
 #include <iostream>
 
 struct DummyResource {
