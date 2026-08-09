@@ -3,8 +3,11 @@ TinyResourceManager Lightweight header-only C++20 resource manager for games and
 Features:
 
 •	Header-only: drop ResourceManager.hpp into your project
+
 •	Smart caching: avoids duplicate disk loads
+
 •	Modern C++20 (stdshared_ptr, stdfilesystem, concepts)
+
 •	Automatic cleanup of unused resources
 
 Quick start:
