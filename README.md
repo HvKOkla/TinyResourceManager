@@ -1,15 +1,19 @@
 TinyResourceManager Lightweight header-only C++20 resource manager for games and real-time apps.
-Features
+Features:
+
 •	Header-only: drop ResourceManager.hpp into your project
 •	Smart caching: avoids duplicate disk loads
 •	Modern C++20 (stdshared_ptr, stdfilesystem, concepts)
 •	Automatic cleanup of unused resources
-Quick start
+Quick start:
+
 1.	Copy ResourceManager.hpp into your include path
 2.	#include "ResourceManager.hpp"
 3.	Use CoreResourceManager<T> to load resources: Example: CoreResourceManager<Texture> textures; auto t = textures.load("assets/hero.png"); textures.unloadUnused();
-Requirements
+Requirements:
+
 •	C++20 compiler (MSVC/Clang/GCC)
 •	CMake >= 3.15 (if using provided build files)
-License MIT
+
+License MIT 
    
