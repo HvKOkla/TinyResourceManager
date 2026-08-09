@@ -24,6 +24,6 @@ Requirement:
 
 License MIT See LICENCE for more information
 
-Contributing
+Contributing:
 You can contribute to the project in several ways: by proposing new ideas, reporting bugs you encounter, or improving existing code. If you would like to submit a change, you can open a Pull Request so that we can review your changes and incorporate them into the project if necessary.
    
